@@ -1,4 +1,2 @@
 node_modules/
-*.env
-.envgit add
-*/node_modules
+.env
