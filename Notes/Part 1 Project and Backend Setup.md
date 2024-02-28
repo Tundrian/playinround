@@ -160,3 +160,108 @@
 - The notFound metthod sets an error with a message that the url is not found and an error status of 404, then calls the callback function with the error provided
 - the errorHandler method takes in the error message, checks if the status is good (200) and sets it to 500 or the status of the current response. It sets a message to the value provided by the error. If the error's name is "CastError" and the error kind is 'ObjectId' (look this up) then the status is changed to 404 and the message is updated.
 it then sets the res status to the new code and replies with json of the message and a stack trace if in development
+
+- Add the error handlers to the server.js file
+
+		import { notFound, errorHandler} from './middleware/errorMiddleware.js'
+
+		app.use(notFound)
+		app.use(errorHandler)
+
+## Adding Route and Controller Structure
+
+- In the userRoutes file, configure the core strucutre of the routes needed:
+
+		import asyncHandler from 'express-async-handler';
+
+		//  @desc   Auth user/set token
+		//  @route  POST /api/users/auth
+		//  @access Public
+		const authUser = asyncHandler(async(req, res) => {
+		    res.status(200).json({ message: 'Auth User' })
+		})
+
+		//  @desc   Register new user
+		//  @route  POST /api/users
+		//  @access Public
+		const registerUser = asyncHandler(async(req, res) => {    		
+    		res.status(200).json({ message: 'Register User' })
+		})
+
+		//  @desc   Logout user
+		//  @route  POST /api/users/logout
+		//  @access Public
+		const logoutUser = asyncHandler(async(req, res) => {
+ 		   res.status(200).json({ message: 'Logout User' })
+		})
+
+		//  @desc   Get user profile
+		//  @route  GET /api/users/profile
+		//  @access Private
+		const getUserProfile = asyncHandler(async(req, res) => {
+  		  res.status(200).json({ message: 'Get User Profile' })
+		})
+
+		//  @desc   Update user profile
+		//  @route  PUT /api/users/profile
+		//  @access Private
+		const updateUserProfile = asyncHandler(async(req, res) => {
+  		  res.status(200).json({ message: 'Update user profile' })
+		})
+
+		export {
+		    authUser,
+  			registerUser,
+  		  	logoutUser,
+  		  	getUserProfile,
+  		  	updateUserProfile,
+		}
+
+- This adds an 
+	- authenticate user (login), 	
+	- register user, 
+	- logout user, 
+	- get user profile, 
+	- and update user profile methods
+
+- Add the controller functions to the routes file
+
+		import express from 'express';
+		
+		const router = express.Router()
+		
+		import {
+			authUser,
+			registerUser,
+    		logoutUser,
+			getUserProfile,
+    		updateUserProfile,
+		} from '../controllers/userController.js';
+
+		// uses the express router, adds a post request to '/auth' that calls the authUser controller function that is imported
+		router.post('/', registerUser)
+		router.post('/auth', authUser)
+		router.post('/logout', logoutUser)
+		router.route('/profile').get(getUserProfile).put(updateUserProfile)
+
+		// exports the entire router with all added methods/routes
+
+		export default router;
+
+- Then user Postman or Thunderclient to validate the endpoints
+	- Login User: 
+				
+			POST {{baseURL}}/users/auth 
+	- Register User
+			
+			POST {{baseURL}}/users
+	- Logout User
+
+			POST {{baseURL}}/users/logout 
+	-  Get User Profile
+
+			GET {{baseURL}}/users/profile
+	- Update User Profile
+
+			PUT {{baseURL}}/users/profile 
+
